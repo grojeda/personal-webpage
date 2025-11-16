@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-pnpm exec node scripts/verify-commit-msg.mjs "$1"
