@@ -1,22 +1,31 @@
+---
+import '../styles/global.css';
+
+const {
+	title = 'Personal Web Starter',
+	description = 'Boilerplate minimalista listo para crear tu pagina personal con Astro, React y Tailwind.'
+} = Astro.props;
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="es" class="bg-slate-950">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{title}</title>
+		<meta name="description" content={description} />
 	</head>
-	<body>
-		<slot />
+	<body class="min-h-screen bg-slate-950 text-white antialiased">
+		<div class="relative min-h-screen overflow-hidden">
+			<div
+				aria-hidden="true"
+				class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.35),_transparent_60%)]"
+			></div>
+			<main class="relative z-10 flex min-h-screen flex-col">
+				<slot />
+			</main>
+		</div>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
