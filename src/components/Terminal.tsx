@@ -4,11 +4,16 @@ import { useUptime } from '../hooks/useUptime';
 
 type HistoryEntry = {
   id: number;
-  content?: string;
+  type: 'command' | 'output';
+  content: string;
 };
 
-const helpText = `Comandos disponibles:
-- projects`;
+const helpText = `Available commands:
+  help        Display this help message
+  projects    Show personal projects panel
+  clear       Clear the terminal screen
+  about       Display system information
+  contact     Show contact details`;
 
 const buildIntroArt = (uptime: string) => `
 ┌──────────────────────────────────────────────────────────┐
@@ -29,7 +34,7 @@ const Terminal = () => {
   const uptime = useUptime();
 
   const [history, setHistory] = useState<HistoryEntry[]>([
-    { id: 0, content: buildIntroArt(uptime) }
+    { id: 0, type: 'output', content: buildIntroArt(uptime) }
   ]);
   const [input, setInput] = useState('');
   const [showProjects, setShowProjects] = useState(false);
@@ -41,29 +46,42 @@ const Terminal = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    const nextId = history.length ? history[history.length - 1].id + 1 : 0;
+    setHistory((prev) => {
+      const nextId = prev.length ? prev[prev.length - 1].id + 1 : 0;
+      const entries: HistoryEntry[] = [];
 
-    const newEntries: HistoryEntry[] = [...history, { id: nextId, content: trimmed }];
+      entries.push({
+        id: nextId,
+        type: 'command',
+        content: trimmed
+      });
 
-    if (trimmed.toLowerCase() === 'projects') {
-      newEntries.push({
-        id: nextId + 1
-      });
-      setShowProjects(true);
-    }
-    if (trimmed.toLowerCase() === 'help') {
-      newEntries.push({
-        id: nextId + 1,
-        content: helpText
-      });
-    } else {
-      newEntries.push({
-        id: nextId + 1,
-        content: `bash: command not found: ${trimmed}`
-      });
-    }
+      const lower = trimmed.toLowerCase();
 
-    setHistory(newEntries);
+      if (lower === 'projects') {
+        entries.push({
+          id: nextId + 1,
+          type: 'output',
+          content: ''
+        });
+        setShowProjects(true);
+      } else if (lower === 'help') {
+        entries.push({
+          id: nextId + 1,
+          type: 'output',
+          content: helpText
+        });
+      } else {
+        entries.push({
+          id: nextId + 1,
+          type: 'output',
+          content: `bash: command not found: ${trimmed}`
+        });
+      }
+
+      return [...prev, ...entries];
+    });
+
     setInput('');
   };
 
@@ -77,23 +95,23 @@ const Terminal = () => {
     const intervalId = window.setInterval(() => {
       const next = getUptimeString();
       setHistory((prev) =>
-        prev.map((entry) => (entry.id === 0 ? { ...entry, content: buildIntroArt(next) } : entry))
+        prev.map((entry) =>
+          entry.id === 0 ? { ...entry, content: buildIntroArt(next) } : entry
+        )
       );
     }, 1000);
 
     return () => window.clearInterval(intervalId);
   }, []);
 
-  const routePath = () => {
-    return (
-      <>
-        <span className="text-emerald-400">grojeda@personal-webpage</span>
-        <span className="text-slate-500">:</span>
-        <span className="text-sky-400">~</span>
-        <span className="text-slate-500">$ </span>
-      </>
-    );
-  };
+  const routePath = () => (
+    <>
+      <span className="text-emerald-400">grojeda@personal-webpage</span>
+      <span className="text-slate-500">:</span>
+      <span className="text-sky-400">~</span>
+      <span className="text-slate-500 mr-2">$</span>
+    </>
+  );
 
   return (
     <section className="flex h-[calc(100vh-4rem)] w-full items-stretch px-6 py-6">
@@ -107,23 +125,33 @@ const Terminal = () => {
             ref={terminalRef}
             className="flex-1 overflow-y-auto rounded-md bg-slate-950/90 p-3 font-mono text-sm text-slate-100 shadow-inner shadow-slate-950/80"
           >
-            {routePath()}
             {history.map((entry) => (
-              <pre key={entry.id} className="whitespace-pre text-slate-100">
-                {entry.id !== 0 && routePath()}
-                {entry.content && entry.content}
-              </pre>
+              <div key={entry.id} className="flex">
+                {entry.type === 'command' ? (
+                  <>
+                    {routePath()}
+                    <pre className="whitespace-pre text-slate-100">
+                      {entry.content}
+                    </pre>
+                  </>
+                ) : (
+                  <pre className="whitespace-pre text-slate-100">
+                    {entry.content}
+                  </pre>
+                )}
+              </div>
             ))}
+
             <form
               onSubmit={handleSubmit}
-              className="flex items-center bg-slate-950/95 font-mono text-sm text-slate-100"
+              className="mt-4 flex items-center bg-slate-950/95 font-mono text-sm text-slate-100"
             >
               {routePath()}
               <input
                 autoFocus
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                className="ml-2 flex-1 bg-transparent caret-emerald-400 outline-none [caret-width:4px] placeholder:text-slate-600"
+                className="ml-1 flex-1 bg-transparent caret-emerald-400 outline-none"
               />
             </form>
           </div>
