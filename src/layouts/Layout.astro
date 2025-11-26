@@ -8,7 +8,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="es" class="bg-slate-950">
+<html lang="es" class="h-[100svh] overflow-hidden bg-[#1e1e2e] text-[#cdd6f4]">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,14 +17,14 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
   </head>
-  <body class="min-h-screen bg-slate-950 text-white antialiased">
-    <div class="relative min-h-screen overflow-hidden">
+  <body class="h-[100svh] overflow-hidden bg-[#1e1e2e] text-[#cdd6f4] antialiased">
+    <div class="relative h-full overflow-hidden">
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.35),_transparent_60%)]"
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(137,180,250,0.35),_transparent_60%)]"
       >
       </div>
-      <main class="relative z-10 flex min-h-screen flex-col">
+      <main class="relative z-10 flex h-full min-h-0 flex-col overflow-hidden">
         <slot />
       </main>
     </div>

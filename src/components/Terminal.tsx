@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getUptimeString } from '../shared/time';
 import { useUptime } from '../hooks/useUptime';
+import { resolveWindowSlug, WINDOW_LABELS, type WindowSlug } from '../shared/windows';
 
 type HistoryEntry = {
   id: number;
@@ -8,12 +9,12 @@ type HistoryEntry = {
   content: string;
 };
 
-const helpText = `Available commands:
-  help        Display this help message
-  projects    Show personal projects panel
-  clear       Clear the terminal screen
-  about       Display system information
-  contact     Show contact details`;
+type TerminalProps = {
+  openPanels: WindowSlug[];
+  onOpenPanel: (panel: WindowSlug) => WindowSlug | null;
+  onClosePanel: (panel: WindowSlug) => void;
+  onCloseAll: () => void;
+};
 
 const buildIntroArt = (uptime: string) => `
 ┌──────────────────────────────────────────────────────────┐
@@ -30,15 +31,94 @@ const buildIntroArt = (uptime: string) => `
 Type 'help' to see available commands.
 `;
 
-const Terminal = () => {
+const buildHelpText = () => {
+  const availableWindows = Object.values(WINDOW_LABELS)
+    .map((label) => `  - ${label}`)
+    .join('\n');
+
+  return `Available commands:
+  help             Display this help message
+  clear            Clear the terminal screen
+  windows          List open windows
+  close all        Close every window except terminal
+  open <window>    Open one of: 
+${availableWindows}
+  close <window>   Close the requested window
+  <window>         Shortcut to open (jobs, about, contact)
+
+Note: the desktop keeps a max of four windows visible; the oldest non-terminal window closes first.`;
+};
+
+const Terminal = ({ openPanels, onOpenPanel, onClosePanel, onCloseAll }: TerminalProps) => {
   const uptime = useUptime();
 
   const [history, setHistory] = useState<HistoryEntry[]>([
     { id: 0, type: 'output', content: buildIntroArt(uptime) }
   ]);
   const [input, setInput] = useState('');
-  const [showProjects, setShowProjects] = useState(false);
   const terminalRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const focusInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, []);
+  const helpText = buildHelpText();
+
+  const handleWindowCommand = (lower: string): string | null => {
+    if (lower === 'windows') {
+      if (openPanels.length === 0) {
+        return 'No secondary windows are active.';
+      }
+
+      const list = openPanels
+        .map((panel) => `- ${WINDOW_LABELS[panel]}`)
+        .join('\n');
+      return `Open windows:\n${list}`;
+    }
+
+    if (lower === 'close all') {
+      if (openPanels.length === 0) {
+        return 'No windows need to be closed.';
+      }
+
+      onCloseAll();
+      return 'Closed every secondary window.';
+    }
+
+    const closeMatch = lower.match(/^close\s+(.+)/);
+    if (closeMatch) {
+      const slug = resolveWindowSlug(closeMatch[1].trim());
+      if (!slug) {
+        return `Unknown window: ${closeMatch[1].trim()}`;
+      }
+
+      if (!openPanels.includes(slug)) {
+        return `${WINDOW_LABELS[slug]} is not open.`;
+      }
+
+      onClosePanel(slug);
+      return `Closing ${WINDOW_LABELS[slug]} window.`;
+    }
+
+    const openMatch = lower.match(/^(open|show)\s+(.+)/);
+    const slug =
+      (openMatch && resolveWindowSlug(openMatch[2].trim())) ||
+      resolveWindowSlug(lower);
+
+    if (slug) {
+      if (openPanels.includes(slug)) {
+        return `${WINDOW_LABELS[slug]} is already visible.`;
+      }
+
+      const replaced = onOpenPanel(slug);
+      if (replaced) {
+        return `Opening ${WINDOW_LABELS[slug]} window (closing ${WINDOW_LABELS[replaced]}).`;
+      }
+
+      return `Opening ${WINDOW_LABELS[slug]} window.`;
+    }
+
+    return null;
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -58,25 +138,30 @@ const Terminal = () => {
 
       const lower = trimmed.toLowerCase();
 
-      if (lower === 'projects') {
-        entries.push({
-          id: nextId + 1,
-          type: 'output',
-          content: ''
-        });
-        setShowProjects(true);
-      } else if (lower === 'help') {
+      if (lower === 'help') {
         entries.push({
           id: nextId + 1,
           type: 'output',
           content: helpText
         });
+      } else if (lower === 'clear') {
+        return [{ id: 0, type: 'output', content: buildIntroArt(uptime) }];
       } else {
-        entries.push({
-          id: nextId + 1,
-          type: 'output',
-          content: `bash: command not found: ${trimmed}`
-        });
+        const response = handleWindowCommand(lower);
+
+        if (!response) {
+          entries.push({
+            id: nextId + 1,
+            type: 'output',
+            content: `bash: command not found: ${trimmed}`
+          });
+        } else {
+          entries.push({
+            id: nextId + 1,
+            type: 'output',
+            content: response
+          });
+        }
       }
 
       return [...prev, ...entries];
@@ -106,66 +191,52 @@ const Terminal = () => {
 
   const routePath = () => (
     <>
-      <span className="text-emerald-400">grojeda@personal-webpage</span>
-      <span className="text-slate-500">:</span>
-      <span className="text-sky-400">~</span>
-      <span className="text-slate-500 mr-2">$</span>
+      <span className="text-[#a6e3a1]">grojeda@personal-webpage</span>
+      <span className="text-[#7f849c]">:</span>
+      <span className="text-[#89b4fa]">~</span>
+      <span className="mr-2 text-[#7f849c]">$</span>
     </>
   );
 
   return (
-    <section className="flex h-[calc(100vh-4rem)] w-full items-stretch px-6 py-6">
-      <div className="flex w-full gap-4">
-        <div
-          className={`flex flex-1 flex-col rounded-xl border border-slate-800/80 bg-slate-950/90 p-4 shadow-[0_0_0_1px_rgba(15,23,42,0.9)] backdrop-blur-md transition-[flex] duration-200 ${
-            showProjects ? 'md:w-1/2' : 'md:w-full'
-          }`}
+    <div
+      className="flex h-full min-h-0 w-full flex-col font-mono text-sm text-[#cdd6f4]"
+      onClick={focusInput}
+      onMouseEnter={focusInput}
+    >
+      <div ref={terminalRef} className="scroll-shell flex-1 overflow-y-auto">
+        {history.map((entry) => (
+          <div key={entry.id} className="flex">
+            {entry.type === 'command' ? (
+              <>
+                {routePath()}
+                <pre className="whitespace-pre text-[#cdd6f4]">
+                  {entry.content}
+                </pre>
+              </>
+            ) : (
+              <pre className="whitespace-pre-wrap break-words text-[#cdd6f4]">
+                {entry.content}
+              </pre>
+            )}
+          </div>
+        ))}
+
+        <form
+          onSubmit={handleSubmit}
+          className="mt-4 flex items-center bg-transparent text-[#cdd6f4]"
         >
-          <div
-            ref={terminalRef}
-            className="flex-1 overflow-y-auto rounded-md bg-slate-950/90 p-3 font-mono text-sm text-slate-100 shadow-inner shadow-slate-950/80"
-          >
-            {history.map((entry) => (
-              <div key={entry.id} className="flex">
-                {entry.type === 'command' ? (
-                  <>
-                    {routePath()}
-                    <pre className="whitespace-pre text-slate-100">
-                      {entry.content}
-                    </pre>
-                  </>
-                ) : (
-                  <pre className="whitespace-pre text-slate-100">
-                    {entry.content}
-                  </pre>
-                )}
-              </div>
-            ))}
-
-            <form
-              onSubmit={handleSubmit}
-              className="mt-4 flex items-center bg-slate-950/95 font-mono text-sm text-slate-100"
-            >
-              {routePath()}
-              <input
-                autoFocus
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                className="ml-1 flex-1 bg-transparent caret-emerald-400 outline-none"
-              />
-            </form>
-          </div>
-        </div>
-
-        {showProjects && (
-          <div className="hidden w-1/2 flex-1 flex-col rounded-xl border border-slate-800/80 bg-slate-950/90 p-4 shadow-[0_0_0_1px_rgba(15,23,42,0.9)] backdrop-blur-md md:flex">
-            <div className="flex flex-1 items-center justify-center rounded-md bg-slate-950/90 p-4 font-mono text-sm text-slate-300">
-              ventana proyectos
-            </div>
-          </div>
-        )}
+          {routePath()}
+          <input
+            ref={inputRef}
+            autoFocus
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            className="ml-1 flex-1 bg-transparent caret-[#a6e3a1] text-[#cdd6f4] outline-none"
+          />
+        </form>
       </div>
-    </section>
+    </div>
   );
 };
 

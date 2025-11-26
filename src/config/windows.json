@@ -1,0 +1,60 @@
+{
+  "jobs": [
+    {
+      "role": "Lorem Ipsum Seniorus",
+      "company": "Lorem Fabrica",
+      "period": "2022 — presente",
+      "stack": ["Lorem", "Ipsum", "Dolor", "Sit Amet"]
+    },
+    {
+      "role": "Dolor Sit Engineer",
+      "company": "Ipsum Collective",
+      "period": "2020 — 2022",
+      "stack": ["Consectetur", "Adipiscing", "Elit", "Vestibulum"]
+    },
+    {
+      "role": "Freelance Loremist",
+      "company": "Remotus Europae",
+      "period": "2016 — 2020",
+      "stack": ["Mauris", "Nunc", "Pretium", "Sollicitudin"]
+    }
+  ],
+  "about": {
+    "intro": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam feugiat neque id urna aliquet, a posuere tortor fermentum.",
+    "highlights": [
+      {
+        "label": "lorem focus",
+        "value": "Lorem ipsum dolor · sit amet · consectetur adipiscing"
+      },
+      {
+        "label": "zona lorem",
+        "value": "Dolor sit amet · consectetur · adipiscing elit · gravida"
+      },
+      {
+        "label": "playground ipsum",
+        "value": "Lorem ipsum · dolor sit · amet consectetur"
+      },
+      {
+        "label": "human bit",
+        "value": "Lorem walker · ipsum brewer · dolor runner"
+      }
+    ]
+  },
+  "contact": [
+    {
+      "label": "correo",
+      "value": "lorem.ipsum@example.com",
+      "href": "mailto:lorem.ipsum@example.com"
+    },
+    {
+      "label": "repositorio",
+      "value": "github.com/loremipsum",
+      "href": "https://github.com/loremipsum"
+    },
+    {
+      "label": "perfil",
+      "value": "linkedin.com/in/loremipsum",
+      "href": "https://www.linkedin.com/in/loremipsum/"
+    }
+  ]
+}
