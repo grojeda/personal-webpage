@@ -16,20 +16,39 @@ type TerminalProps = {
   onCloseAll: () => void;
 };
 
-const buildIntroArt = (uptime: string) => `
-┌──────────────────────────────────────────────────────────┐
-│ name:       Germán Rodríguez Ojeda                       │
-│ role:       Fullstack Developer                          │
-│ focus:      LLMs · Homelab experimentation               │
-│ location:   Spain                                        │
-│ status:     available for chat                           │
-│ uptime:     ${uptime}                         │
-│ mode:       building my own AI tools and homelab         │
-│ contact:    german.rodriguez@proton.me                   │
-└──────────────────────────────────────────────────────────┘
+const BOX_CONTENT_WIDTH = 58;
+const LABEL_WIDTH = 11;
 
-Type 'help' to see available commands.
-`;
+const makeLine = (label: string, value: string) => {
+  const labelText = `${label}:`.padEnd(LABEL_WIDTH, ' ');
+  const content = `${labelText}${value}`.padEnd(BOX_CONTENT_WIDTH, ' ');
+
+  return `│ ${content} │`;
+};
+
+const buildIntroArt = (uptime: string) => {
+  const lines = [
+    makeLine('name', 'Germán Rodríguez Ojeda'),
+    makeLine('role', 'Fullstack Developer'),
+    makeLine('focus', 'LLMs · Homelab experimentation'),
+    makeLine('location', 'Spain'),
+    makeLine('status', 'available for chat'),
+    makeLine('uptime', uptime),
+    makeLine('mode', 'building my own AI tools and homelab'),
+    makeLine('contact', 'german.rodriguez@proton.me')
+  ];
+
+  const top = '┌' + '─'.repeat(BOX_CONTENT_WIDTH + 2) + '┐';
+  const bottom = '└' + '─'.repeat(BOX_CONTENT_WIDTH + 2) + '┘';
+
+  return [
+    top,
+    ...lines,
+    bottom,
+    '',
+    "Type 'help' to see available commands."
+  ].join('\n');
+};
 
 const buildHelpText = () => {
   const availableWindows = Object.values(WINDOW_LABELS)
