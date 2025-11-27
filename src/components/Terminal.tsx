@@ -23,7 +23,7 @@ const buildIntroArt = (uptime: string) => `
 │ focus:      LLMs · Homelab experimentation               │
 │ location:   Spain                                        │
 │ status:     available for chat                           │
-│ uptime:     ${uptime}                        │
+│ uptime:     ${uptime}                         │
 │ mode:       building my own AI tools and homelab         │
 │ contact:    german.rodriguez@proton.me                   │
 └──────────────────────────────────────────────────────────┘

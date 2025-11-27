@@ -8,7 +8,7 @@ type WindowProps = {
 };
 
 const windowBase =
-  'group relative flex h-full flex-col rounded-xl border border-[#45475a]/80 bg-[rgba(30,30,46,0.92)] shadow-[0_0_0_1px_rgba(69,71,90,0.65)] backdrop-blur-md transition-[border-color,box-shadow] duration-500 ease-out will-change-transform group-hover:border-white animate-window-pop hover:border-white';
+  'group relative flex h-full flex-col rounded-xl border border-[#45475a]/60 bg-[rgba(24,24,36,0.65)] shadow-[0_0_0_1px_rgba(69,71,90,0.4)] backdrop-blur-[9px] hover:backdrop-blur-[18px] transition duration-700 ease-out will-change-transform group-hover:border-white animate-window-pop hover:border-white';
 
 const Window = ({ children, className, title, onClose }: WindowProps) => {
   const showHeader = Boolean(title);
@@ -34,7 +34,7 @@ const Window = ({ children, className, title, onClose }: WindowProps) => {
           )}
         </div>
       )}
-      <div className="scroll-shell flex flex-1 min-h-0 overflow-y-auto overscroll-contain rounded-xl bg-[rgba(21,21,35,0.9)] p-4 pt-12 font-mono text-sm text-[#cdd6f4]">
+      <div className="scroll-shell flex flex-1 min-h-0 overflow-y-auto overscroll-contain rounded-xl bg-[rgba(12,12,20,0.55)] p-4 pt-12 font-mono text-sm text-[#cdd6f4]">
         {children}
       </div>
     </div>
