@@ -210,16 +210,16 @@ const Terminal = ({ openPanels, onOpenPanel, onClosePanel, onCloseAll }: Termina
 
   const routePath = () => (
     <>
-      <span className="text-[#a6e3a1]">grojeda@personal-webpage</span>
-      <span className="text-[#7f849c]">:</span>
-      <span className="text-[#89b4fa]">~</span>
-      <span className="mr-2 text-[#7f849c]">$</span>
+      <span className="text-accent-green">grojeda<span className='text-accent-blue'>@personal-webpage</span></span>
+      <span className="text-muted">:</span>
+      <span className="text-accent-blue">~</span>
+      <span className="mr-2 text-muted">$</span>
     </>
   );
 
   return (
     <div
-      className="flex h-full min-h-0 w-full flex-col font-mono text-sm text-[#cdd6f4]"
+      className="flex h-full min-h-0 w-full flex-col font-mono text-sm text-foreground"
       onClick={focusInput}
       onMouseEnter={focusInput}
     >
@@ -229,12 +229,12 @@ const Terminal = ({ openPanels, onOpenPanel, onClosePanel, onCloseAll }: Termina
             {entry.type === 'command' ? (
               <>
                 {routePath()}
-                <pre className="whitespace-pre text-[#cdd6f4]">
+                <pre className="whitespace-pre text-foreground">
                   {entry.content}
                 </pre>
               </>
             ) : (
-              <pre className="whitespace-pre-wrap break-words text-[#cdd6f4]">
+              <pre className="whitespace-pre-wrap break-words text-foreground">
                 {entry.content}
               </pre>
             )}
@@ -243,7 +243,7 @@ const Terminal = ({ openPanels, onOpenPanel, onClosePanel, onCloseAll }: Termina
 
         <form
           onSubmit={handleSubmit}
-          className="mt-4 flex items-center bg-transparent text-[#cdd6f4]"
+          className="mt-4 flex items-center bg-transparent text-foreground"
         >
           {routePath()}
           <input
@@ -251,7 +251,7 @@ const Terminal = ({ openPanels, onOpenPanel, onClosePanel, onCloseAll }: Termina
             autoFocus
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            className="ml-1 flex-1 bg-transparent caret-[#a6e3a1] text-[#cdd6f4] outline-none"
+            className="ml-1 flex-1 bg-transparent caret-accent-green text-foreground outline-none"
           />
         </form>
       </div>

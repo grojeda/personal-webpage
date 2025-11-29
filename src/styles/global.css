@@ -1,9 +1,35 @@
+@config "../../tailwind.config.mjs";
 @import "tailwindcss";
 
 :root {
+	color-scheme: dark;
+	--color-background: 30 30 46;
+	--color-surface: 36 39 58;
+	--color-window: 24 24 36;
+	--color-panel: 12 12 20;
+	--color-border: 69 71 90;
+	--color-foreground: 205 214 244;
+	--color-muted: 127 132 156;
+	--color-accent-green: 166 227 161;
+	--color-accent-blue: 137 180 250;
+	--color-accent-cyan: 148 226 213;
+	--color-accent-peach: 250 179 135;
+	--color-accent-rose: 243 139 168;
+	--color-accent-pink: 245 194 231;
+	--color-accent-lavender: 186 194 222;
+	--color-accent-gray: 88 91 112;
+
 	font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-	color: #cdd6f4;
-	background: #1e1e2e;
+	color: rgb(var(--color-foreground));
+	background-color: rgb(var(--color-background));
+}
+
+body {
+	min-height: 100vh;
+	margin: 0;
+	background-color: rgb(var(--color-background));
+	color: rgb(var(--color-foreground));
+	font-family: inherit;
 }
 
 @layer utilities {
@@ -25,7 +51,7 @@
 
 	.scroll-shell {
 		scrollbar-width: thin;
-		scrollbar-color: rgba(166, 227, 161, 0.55) rgba(69, 71, 90, 0.55);
+		scrollbar-color: rgb(var(--color-accent-green) / 0.55) rgb(var(--color-border) / 0.55);
 	}
 
 	.scroll-shell::-webkit-scrollbar {
@@ -33,17 +59,25 @@
 	}
 
 	.scroll-shell::-webkit-scrollbar-track {
-		background: rgba(69, 71, 90, 0.55);
+		background: rgb(var(--color-border) / 0.55);
 		border-radius: 999px;
 	}
 
 	.scroll-shell::-webkit-scrollbar-thumb {
-		background: linear-gradient(180deg, rgba(166, 227, 161, 0.65), rgba(137, 180, 250, 0.5));
+		background: linear-gradient(
+			180deg,
+			rgb(var(--color-accent-green) / 0.65),
+			rgb(var(--color-accent-blue) / 0.5)
+		);
 		border-radius: 999px;
-		box-shadow: 0 0 10px rgba(137, 180, 250, 0.45);
+		box-shadow: 0 0 10px rgb(var(--color-accent-blue) / 0.45);
 	}
 
 	.scroll-shell::-webkit-scrollbar-thumb:hover {
-		background: linear-gradient(180deg, rgba(166, 227, 161, 0.85), rgba(137, 180, 250, 0.75));
+		background: linear-gradient(
+			180deg,
+			rgb(var(--color-accent-green) / 0.85),
+			rgb(var(--color-accent-blue) / 0.75)
+		);
 	}
- }
+}
