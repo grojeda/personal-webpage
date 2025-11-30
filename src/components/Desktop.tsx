@@ -1,17 +1,27 @@
 import { useMemo, useState, type ComponentType } from 'react';
 import Terminal from './Terminal';
 import Window from './Window';
-import Jobs, { type JobEntry } from './Jobs';
+import Jobs from './Jobs';
+import { JobsViewMode } from './jobs/viewMode';
 import About, { type AboutData } from './About';
 import Contact, { type ContactEntry } from './Contact';
 import type { WindowSlug } from '../shared/windows';
 import { WINDOW_LABELS } from '../shared/windows';
 import rawWindowData from '../config/windows.json';
+import { jobDocuments, type JobDocument } from '../shared/jobs';
 
 const MAX_SECONDARY_WINDOWS = 3;
 
+type JobsPanelData = {
+  jobs: JobDocument[];
+  selectedFilename: string | null;
+  onSelectJob: (filename: string | null) => void;
+  viewMode: JobsViewMode;
+  onChangeView: (mode: JobsViewMode) => void;
+};
+
 type PanelDataMap = {
-  jobs: JobEntry[];
+  jobs: JobsPanelData;
   about: AboutData;
   contact: ContactEntry[];
 };
@@ -23,18 +33,19 @@ type PanelComponentProps<K extends WindowSlug> = {
 type PanelConfig<K extends WindowSlug> = {
   Component: ComponentType<PanelComponentProps<K>>;
   data: PanelDataMap[K];
+  getTitle?: (data: PanelDataMap[K]) => string;
 };
 
-const windowData = rawWindowData as PanelDataMap;
-
-const panelRegistry: { [K in WindowSlug]: PanelConfig<K> } = {
-  jobs: { Component: Jobs, data: windowData.jobs },
-  about: { Component: About, data: windowData.about },
-  contact: { Component: Contact, data: windowData.contact }
-};
+const windowData = rawWindowData as Omit<PanelDataMap, 'jobs'>;
 
 const Desktop = () => {
   const [openPanels, setOpenPanels] = useState<WindowSlug[]>([]);
+  const [activeJobFilename, setActiveJobFilename] = useState<string | null>(
+    null
+  );
+  const [jobsViewMode, setJobsViewMode] = useState<JobsViewMode>(
+    JobsViewMode.Directory
+  );
 
   const layout = useMemo(() => {
     const totalWindows = openPanels.length + 1;
@@ -100,6 +111,30 @@ const Desktop = () => {
   };
 
   const closeAllPanels = () => setOpenPanels([]);
+  const handleSelectJob = (filename: string | null) => {
+    setActiveJobFilename(filename);
+  };
+
+  const panelRegistry: { [K in WindowSlug]: PanelConfig<K> } = {
+    jobs: {
+      Component: Jobs,
+      data: {
+        jobs: jobDocuments,
+        selectedFilename: activeJobFilename,
+        onSelectJob: handleSelectJob,
+        viewMode: jobsViewMode,
+        onChangeView: setJobsViewMode
+      },
+      getTitle: ({ viewMode, selectedFilename }) => {
+        if (viewMode === JobsViewMode.File && selectedFilename) {
+          return `./jobs/${selectedFilename}`;
+        }
+        return './jobs';
+      }
+    },
+    about: { Component: About, data: windowData.about },
+    contact: { Component: Contact, data: windowData.contact }
+  };
 
   return (
     <section className="box-border flex h-svh min-h-0 w-full items-stretch overflow-hidden px-4 py-6 md:px-6">
@@ -113,16 +148,28 @@ const Desktop = () => {
             onOpenPanel={openPanel}
             onClosePanel={closePanel}
             onCloseAll={closeAllPanels}
+            jobFiles={jobDocuments}
+            onSelectJob={handleSelectJob}
+            onSetJobsViewMode={(mode) => {
+              setJobsViewMode(mode);
+              if (mode === JobsViewMode.Directory) {
+                handleSelectJob(null);
+              }
+              if (mode === JobsViewMode.File && !openPanels.includes('jobs')) {
+                openPanel('jobs');
+              }
+            }}
           />
         </Window>
 
         {openPanels.map((panel, index) => {
-          const { Component, data } = panelRegistry[panel];
+          const { Component, data, getTitle } = panelRegistry[panel];
           const placement = layout.panels[index] ?? '';
+          const title = getTitle ? getTitle(data) : WINDOW_LABELS[panel];
           return (
             <Window
               key={panel}
-              title={WINDOW_LABELS[panel]}
+              title={title}
               onClose={() => closePanel(panel)}
               className={`min-h-[280px] ${placement}`}
             >

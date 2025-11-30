@@ -1,0 +1,20 @@
+company: Plain Concepts
+role: Full Stack Developer
+period:
+  start: 2022-10
+  end: 2023-10
+location: "Madrid, Spain · Remote"
+summary: "Managed end-to-end delivery of small and mid-size projects, including client meetings, estimations, organization, CI/CD and development. Strengthened client relationships and expanded technical ownership across multiple stacks."
+technologies:
+  - React
+  - Angular
+  - PHP
+  - TypeScript
+  - Testing Library
+  - Azure DevOps
+skills:
+  - CI/CD
+  - Project management
+  - Client communication
+  - Estimation
+  - Code quality

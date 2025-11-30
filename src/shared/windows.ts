@@ -1,7 +1,7 @@
 export type WindowSlug = 'jobs' | 'about' | 'contact';
 
 export const WINDOW_LABELS: Record<WindowSlug, string> = {
-  jobs: 'jobs',
+  jobs: './jobs',
   about: 'about',
   contact: 'contact'
 };

@@ -1,0 +1,19 @@
+company: Kaikoo
+role: Co-Founder & Frontend Lead
+period:
+  start: 2020-12
+  end: 2022-10
+location: "Spain · Remote"
+summary: "Designed and built the entire frontend architecture of a gaming analytics product. Led the frontend team, coordinated with design, gathered user feedback and delivered multiple features in a fast-paced startup environment."
+technologies:
+  - Vue
+  - Nuxt
+  - TailwindCSS
+  - AWS
+  - Cypress
+  - ECharts
+skills:
+  - Team leadership
+  - Product iteration
+  - Data visualization
+  - Cross-functional collaboration

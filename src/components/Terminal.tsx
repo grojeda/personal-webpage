@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getUptimeString } from '../shared/time';
 import { useUptime } from '../hooks/useUptime';
+import type { JobDocument } from '../shared/jobs';
+import { JobsViewMode } from './jobs/viewMode';
 import { resolveWindowSlug, WINDOW_LABELS, type WindowSlug } from '../shared/windows';
 
 type HistoryEntry = {
@@ -14,6 +16,9 @@ type TerminalProps = {
   onOpenPanel: (panel: WindowSlug) => WindowSlug | null;
   onClosePanel: (panel: WindowSlug) => void;
   onCloseAll: () => void;
+  jobFiles: JobDocument[];
+  onSelectJob: (filename: string | null) => void;
+  onSetJobsViewMode: (mode: JobsViewMode) => void;
 };
 
 const BOX_CONTENT_WIDTH = 58;
@@ -68,7 +73,44 @@ ${availableWindows}
 Note: the desktop keeps a max of four windows visible; the oldest non-terminal window closes first.`;
 };
 
-const Terminal = ({ openPanels, onOpenPanel, onClosePanel, onCloseAll }: TerminalProps) => {
+const ROOT_DIRECTORIES = ['./jobs', './about', './contact'];
+
+const buildLsOutput = () => {
+  const lines = ['.'];
+  ROOT_DIRECTORIES.forEach((dir, index) => {
+    const branch = index === ROOT_DIRECTORIES.length - 1 ? '└──' : '├──';
+    lines.push(`${branch} ${dir}`);
+  });
+  return lines.join('\n');
+};
+
+const normalizeJobInput = (value: string) => {
+  const sanitized = value.trim().replace(/^(\.\/)?jobs\//i, '');
+  if (!sanitized) return '';
+  const withExt = sanitized.endsWith('.yml') || sanitized.endsWith('.yaml')
+    ? sanitized.replace(/\.ya?ml$/i, '.yml')
+    : `${sanitized}.yml`;
+  return withExt;
+};
+
+const findJobByInput = (jobs: JobDocument[], input: string) => {
+  const normalized = normalizeJobInput(input);
+  return (
+    jobs.find(
+      (job) => job.filename.toLowerCase() === normalized.toLowerCase()
+    ) ?? null
+  );
+};
+
+const Terminal = ({
+  openPanels,
+  onOpenPanel,
+  onClosePanel,
+  onCloseAll,
+  jobFiles,
+  onSelectJob,
+  onSetJobsViewMode
+}: TerminalProps) => {
   const uptime = useUptime();
 
   const [history, setHistory] = useState<HistoryEntry[]>([
@@ -139,6 +181,96 @@ const Terminal = ({ openPanels, onOpenPanel, onClosePanel, onCloseAll }: Termina
     return null;
   };
 
+  const handleJobsCommand = (
+    command: string,
+    pushEntry: (entry: Omit<HistoryEntry, 'id'>) => void
+  ) => {
+    const tokens = command.trim().split(/\s+/);
+    if (tokens[0]?.toLowerCase() !== 'jobs') {
+      return false;
+    }
+
+    if (tokens.length === 1) {
+      onSetJobsViewMode(JobsViewMode.Directory);
+      onSelectJob(null);
+      onOpenPanel('jobs');
+      pushEntry({
+        type: 'output',
+        content: 'jobs: opened directory view.'
+      });
+      return true;
+    }
+
+    const action = tokens[1].toLowerCase();
+    const args =
+      action === 'view' || action === 'open'
+        ? tokens.slice(2)
+        : tokens.slice(1);
+    const fileInput = args.join(' ').trim();
+
+    if (!fileInput) {
+      pushEntry({
+        type: 'output',
+        content: 'Usage: jobs view <filename.yml>'
+      });
+      return true;
+    }
+
+    const job = findJobByInput(jobFiles, fileInput);
+    if (!job) {
+      pushEntry({
+        type: 'output',
+        content: `jobs: file not found: ${fileInput}`
+      });
+      return true;
+    }
+
+    onSelectJob(job.filename);
+    onSetJobsViewMode(JobsViewMode.File);
+    onOpenPanel('jobs');
+    pushEntry({
+      type: 'output',
+      content: `Opened ${job.filename} in jobs window.`
+    });
+    return true;
+  };
+
+  const handleCatCommand = (
+    command: string,
+    pushEntry: (entry: Omit<HistoryEntry, 'id'>) => void
+  ) => {
+    if (!command.toLowerCase().startsWith('cat ')) {
+      return false;
+    }
+
+    const target = command.slice(4).trim();
+    if (!target) {
+      pushEntry({ type: 'output', content: 'cat: missing file operand' });
+      return true;
+    }
+
+    const lowerTarget = target.toLowerCase();
+    if (!(lowerTarget.startsWith('jobs/') || lowerTarget.startsWith('./jobs/'))) {
+      pushEntry({
+        type: 'output',
+        content: 'cat: only jobs/<file>.yml is supported.'
+      });
+      return true;
+    }
+
+    const job = findJobByInput(jobFiles, target);
+    if (!job) {
+      pushEntry({
+        type: 'output',
+        content: `cat: ${target}: No such file`
+      });
+      return true;
+    }
+
+    pushEntry({ type: 'output', content: job.raw });
+    return true;
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -147,36 +279,42 @@ const Terminal = ({ openPanels, onOpenPanel, onClosePanel, onCloseAll }: Termina
 
     setHistory((prev) => {
       const nextId = prev.length ? prev[prev.length - 1].id + 1 : 0;
-      const entries: HistoryEntry[] = [];
-
-      entries.push({
-        id: nextId,
-        type: 'command',
-        content: trimmed
-      });
-
+      let cursorId = nextId;
+      const entries: HistoryEntry[] = [
+        { id: cursorId, type: 'command', content: trimmed }
+      ];
+      const pushEntry = (entry: Omit<HistoryEntry, 'id'>) => {
+        cursorId += 1;
+        entries.push({ ...entry, id: cursorId } as HistoryEntry);
+      };
       const lower = trimmed.toLowerCase();
 
       if (lower === 'help') {
-        entries.push({
-          id: nextId + 1,
+        pushEntry({
           type: 'output',
           content: helpText
         });
+      } else if (lower === 'ls') {
+        pushEntry({
+          type: 'output',
+          content: buildLsOutput()
+        });
       } else if (lower === 'clear') {
         return [{ id: 0, type: 'output', content: buildIntroArt(uptime) }];
+      } else if (handleJobsCommand(trimmed, pushEntry)) {
+        // handled above
+      } else if (handleCatCommand(trimmed, pushEntry)) {
+        // handled cat
       } else {
         const response = handleWindowCommand(lower);
 
         if (!response) {
-          entries.push({
-            id: nextId + 1,
+          pushEntry({
             type: 'output',
             content: `bash: command not found: ${trimmed}`
           });
         } else {
-          entries.push({
-            id: nextId + 1,
+          pushEntry({
             type: 'output',
             content: response
           });
@@ -210,7 +348,8 @@ const Terminal = ({ openPanels, onOpenPanel, onClosePanel, onCloseAll }: Termina
 
   const routePath = () => (
     <>
-      <span className="text-accent-green">grojeda<span className='text-accent-blue'>@personal-webpage</span></span>
+      <span className="text-accent-green">grojeda</span>
+      <span className="text-accent-blue">@personal-webpage</span>
       <span className="text-muted">:</span>
       <span className="text-accent-blue">~</span>
       <span className="mr-2 text-muted">$</span>

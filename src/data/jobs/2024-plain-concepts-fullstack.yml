@@ -1,0 +1,24 @@
+company: Plain Concepts
+role: Full Stack Developer
+period:
+  start: 2024-12
+  end: present
+location: "Madrid, Spain · Remote"
+summary: "Contributed to multiple projects of very different scopes, from rapid MVPs to large-scale enterprise applications. Worked across frontend and backend, adapting quickly to each project's architecture and tech stack while supporting both delivery and technical decision-making."
+technologies:
+  - .NET
+  - SQL
+  - Entity Framework
+  - Vue
+  - React
+  - Angular
+  - Vite
+  - Zustand
+  - Azure
+skills:
+  - Agile workflow
+  - Project coordination
+  - Technical ownership
+  - Documentation
+  - Team collaboration
+

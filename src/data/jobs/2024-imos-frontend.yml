@@ -1,0 +1,18 @@
+company: Integrated Marine Observing System (IMOS) — University of Tasmania
+role: Frontend Developer / Project Lead
+period:
+  start: 2024-02
+  end: 2024-12
+location: "Hobart, Tasmania, Australia · On-site"
+summary: "Led the modernization of a national-scale marine data visualization platform. Managed roadmaps, estimations, client communication and team coordination while delivering new frontend architecture and design alignment."
+technologies:
+  - React
+  - Zustand
+  - TailwindCSS
+  - GitHub Actions
+skills:
+  - Technical leadership
+  - Client management
+  - Agile delivery
+  - Design collaboration (Figma)
+  - Team mentoring

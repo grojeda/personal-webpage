@@ -16,8 +16,8 @@ const Window = ({ children, className, title, onClose }: WindowProps) => {
   return (
     <div className={`${windowBase} ${className ?? ''}`}>
       {showHeader && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 py-3 text-[10px] uppercase tracking-[0.35em] text-muted opacity-0 transition-opacity duration-300 ease-out group-hover:pointer-events-auto group-hover:opacity-100">
-          <span className="text-[9px] tracking-[0.4em] text-foreground">
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 py-3 text-xs text-muted opacity-0 transition-opacity duration-300 ease-out group-hover:pointer-events-auto group-hover:opacity-100">
+          <span className="text-foreground">
             {title}
           </span>
           {onClose && (

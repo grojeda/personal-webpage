@@ -1,42 +1,51 @@
-export type JobEntry = {
-  role: string;
-  company: string;
-  period: string;
-  stack: string[];
-};
+import JobsBreadcrumb from './jobs/JobsBreadcrumb';
+import JobsDirectoryGrid from './jobs/JobsDirectoryGrid';
+import JobsFileViewer from './jobs/JobsFileViewer';
+import { JobsViewMode } from './jobs/viewMode';
+import type { JobDocument } from '../shared/jobs';
 
 type JobsProps = {
-  data: JobEntry[];
+  data: {
+    jobs: JobDocument[];
+    selectedFilename: string | null;
+    onSelectJob: (filename: string | null) => void;
+    viewMode: JobsViewMode;
+    onChangeView: (mode: JobsViewMode) => void;
+  };
 };
 
 const Jobs = ({ data }: JobsProps) => {
+  const { jobs, selectedFilename, onSelectJob, viewMode, onChangeView } = data;
+  const selectedJob =
+    jobs.find((job) => job.filename === selectedFilename) ?? null;
+
+  const openFile = (job: JobDocument) => {
+    onSelectJob(job.filename);
+    onChangeView(JobsViewMode.File);
+  };
+
+  const handleBack = () => {
+    onChangeView(JobsViewMode.Directory);
+    onSelectJob(null);
+  };
+
   return (
-    <div className="flex w-full flex-col gap-4">
-      {data.map((job) => (
-        <article
-          key={`${job.company}-${job.role}`}
-          className="rounded-lg border border-border bg-border/15 p-4 text-foreground"
-        >
-          <header className="flex flex-wrap items-center justify-between gap-2 text-sm uppercase tracking-[0.25em] text-muted">
-            <span>{job.company}</span>
-            <span>{job.period}</span>
-          </header>
-          <p className="mt-2 text-lg font-semibold text-foreground">{job.role}</p>
-          <p className="mt-2 text-xs uppercase tracking-[0.3em] text-accent-green">
-            stack
-          </p>
-          <ul className="mt-1 flex flex-wrap gap-2 text-sm text-accent-lavender">
-            {job.stack.map((tool) => (
-              <li
-                key={tool}
-                className="rounded-full border border-accent-gray px-2 py-0.5 text-xs uppercase tracking-[0.2em]"
-              >
-                {tool}
-              </li>
-            ))}
-          </ul>
-        </article>
-      ))}
+    <div className="flex h-full flex-col text-sm text-foreground w-full">
+      <JobsBreadcrumb
+        mode={viewMode}
+        filename={selectedFilename}
+        onBack={viewMode === JobsViewMode.File ? handleBack : undefined}
+      />
+
+      {viewMode === JobsViewMode.Directory ? (
+          <JobsDirectoryGrid
+            jobs={jobs}
+            selectedFilename={selectedFilename}
+            onOpenJob={openFile}
+          />
+        ) : (
+          <JobsFileViewer job={selectedJob} />
+        )}
     </div>
   );
 };

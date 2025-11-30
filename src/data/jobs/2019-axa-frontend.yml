@@ -1,0 +1,19 @@
+company: AXA
+role: Frontend Developer
+period:
+  start: 2019-02
+  end: 2020-02
+location: "Barcelona, Spain · On-site"
+summary: "Developed the frontend for an internal bot-training tool while improving both React and Angular skills across multiple internal projects."
+technologies:
+  - React
+  - Redux
+  - Docker
+  - SCSS
+  - AngularJS
+  - Angular 12
+  - Git
+skills:
+  - UI development
+  - Team collaboration
+  - Multi-stack work

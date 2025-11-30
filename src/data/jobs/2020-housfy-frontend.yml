@@ -1,0 +1,19 @@
+company: Housfy
+role: Frontend Developer
+period:
+  start: 2020-02
+  end: 2020-12
+location: "Barcelona, Spain · Hybrid"
+summary: "Improved performance, implemented Cloudflare CDN and strengthened frontend architecture. Learned TDD, Jest and advanced Vue/Nuxt patterns under senior mentorship."
+technologies:
+  - Vue.js
+  - Nuxt.js
+  - TDD
+  - Jest
+  - Cloudflare CDN
+  - TailwindCSS
+skills:
+  - Performance optimization
+  - Testing
+  - Frontend architecture
+  - Startup culture

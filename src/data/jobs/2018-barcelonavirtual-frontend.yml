@@ -1,0 +1,20 @@
+company: Barcelona Virtual
+role: Frontend Developer
+period:
+  start: 2018-07
+  end: 2019-02
+location: "Barcelona, Spain"
+summary: "Built landing pages and webapps for clients such as Cinesa and Lacasa. Worked on email segmentation with Selligent and improved marketing-driven development workflows."
+technologies:
+  - HTML
+  - CSS
+  - SCSS
+  - JavaScript
+  - jQuery
+  - PHP
+  - Git
+  - Selligent
+skills:
+  - Web development
+  - Marketing integration
+  - Rapid delivery
