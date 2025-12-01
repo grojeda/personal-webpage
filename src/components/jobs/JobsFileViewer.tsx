@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { JobDocument } from '../../shared/jobs';
+import type { JobDocument } from '../../shared/models/jobs';
 
 type JobsFileViewerProps = {
   job: JobDocument | null;

@@ -1,14 +1,14 @@
 import { useMemo, useState, type ComponentType } from 'react';
 import Terminal from './Terminal';
 import Window from './Window';
-import Jobs from './Jobs';
-import { JobsViewMode } from './jobs/viewMode';
-import About, { type AboutData } from './About';
-import Contact, { type ContactEntry } from './Contact';
-import type { WindowSlug } from '../shared/windows';
-import { WINDOW_LABELS } from '../shared/windows';
-import rawWindowData from '../config/windows.json';
-import { jobDocuments, type JobDocument } from '../shared/jobs';
+import Jobs from '../jobs/Jobs';
+import { JobsViewMode } from '../jobs/viewMode';
+import About, { type AboutData } from '../About';
+import Contact, { type ContactEntry } from '../Contact';
+import type { WindowSlug } from '../../shared/models/windows';
+import { WINDOW_LABELS } from '../../shared/models/windows';
+import rawWindowData from '../../config/windows.json';
+import { jobDocuments, type JobDocument } from '../../shared/models/jobs';
 
 const MAX_SECONDARY_WINDOWS = 3;
 

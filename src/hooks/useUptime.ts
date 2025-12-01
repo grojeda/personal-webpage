@@ -1,6 +1,6 @@
 // src/hooks/useUptime.ts
 import { useEffect, useState } from 'react';
-import { getUptimeString } from '../shared/time';
+import { getUptimeString } from '../shared/utils/time';
 
 export const useUptime = () => {
   const [uptime, setUptime] = useState(() => getUptimeString());

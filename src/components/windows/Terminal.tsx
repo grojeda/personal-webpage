@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getUptimeString } from '../shared/time';
-import { useUptime } from '../hooks/useUptime';
-import type { JobDocument } from '../shared/jobs';
-import { JobsViewMode } from './jobs/viewMode';
-import { resolveWindowSlug, WINDOW_LABELS, type WindowSlug } from '../shared/windows';
+import { getUptimeString } from '../../shared/utils/time';
+import { useUptime } from '../../hooks/useUptime';
+import type { JobDocument } from '../../shared/models/jobs';
+import { JobsViewMode } from '../jobs/viewMode';
+import {
+  resolveWindowSlug,
+  WINDOW_LABELS,
+  type WindowSlug
+} from '../../shared/models/windows';
 
 type HistoryEntry = {
   id: number;

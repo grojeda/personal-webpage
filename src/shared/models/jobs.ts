@@ -16,7 +16,7 @@ export type JobDocument = JobDetails & {
   period: GenericPeriod & JobPeriod;
 };
 
-const jobRawModules = import.meta.glob('../data/jobs/*.yml', {
+const jobRawModules = import.meta.glob('../../data/jobs/*.yml', {
   eager: true,
   import: 'default',
   query: '?raw'

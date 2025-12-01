@@ -1,5 +1,5 @@
-import type { JobDocument } from '../../shared/jobs';
-import FileIcon from '../icons/FileIcon';
+import type { JobDocument } from '../../shared/models/jobs';
+import FileIcon from '../ui/FileIcon';
 
 type JobsDirectoryGridProps = {
   jobs: JobDocument[];

@@ -1,8 +1,8 @@
-import JobsBreadcrumb from './jobs/JobsBreadcrumb';
-import JobsDirectoryGrid from './jobs/JobsDirectoryGrid';
-import JobsFileViewer from './jobs/JobsFileViewer';
-import { JobsViewMode } from './jobs/viewMode';
-import type { JobDocument } from '../shared/jobs';
+import JobsBreadcrumb from './JobsBreadcrumb';
+import JobsDirectoryGrid from './JobsDirectoryGrid';
+import JobsFileViewer from './JobsFileViewer';
+import { JobsViewMode } from './viewMode';
+import type { JobDocument } from '../../shared/models/jobs';
 
 type JobsProps = {
   data: {

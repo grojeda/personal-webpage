@@ -1,4 +1,4 @@
-import { CODING_START } from '../config/profile';
+import { CODING_START } from '../models/profile';
 
 export const getUptimeString = (start = CODING_START) => {
   const now = new Date();
